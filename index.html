@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>rgb noise image generator</title>
+<style>
+.centerbox {
+
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-pack: center;
+  -webkit-box-align: center;
+
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-pack: center;
+  -moz-box-align: center;
+
+  width: 100%;
+  height: 100%;
+  margin: 0; padding: 0;
+}
+body, html { width: 100%; height: 100%; padding: 0; margin: 0; }
+body {
+  background-color: #eee;
+}
+</style>
+<script src='perlin.js'></script>
+
+
+</head>
+
+<body>  
+
+<div class='centerbox'>
+
+<label>width: <input type="number" id="width" value="256" min="1"></label><br>
+<label>height: <input type="number" id="height" value="256" min="1"></label><br>
+<label>seed_r: <input type="range" id="seed_r" min="0" max="1" step="any"></label><br>
+<label>seed_g: <input type="range" id="seed_g" min="0" max="1" step="any"></label><br>
+<label>seed_b: <input type="range" id="seed_b" min="0" max="1" step="any"></label><br>
+<label>scale: <input type="number" id="scale" value="0.7"></label><br>
+<button onclick="randomizeSeeds()">randomize seeds</button>
+<button onclick="generate()">regenerate</button><br>
+<br>
+<small>at low scale, it might appear only seed_g changes the image, that is because human eye is most sensitive to a yellowish-green color</small><br>
+<br>
+<canvas id="canvas"></canvas>
+
+</div>
+
+
+
+<script>
+
+window.onload = function() {
+  randomizeSeeds();
+  generate();
+};
+
+function randomizeSeeds() {
+  getElementById('seed_r').value = Math.random();
+  getElementById('seed_g').value = Math.random();
+  getElementById('seed_b').value = Math.random();
+}
+
+function getElementById(id)
+{
+  return document.getElementById(id);
+}
+
+
+
+function generate() {  
+  var canvas = getElementById('canvas');
+  canvas.width = getElementById('width').value;
+  canvas.height = getElementById('height').value;
+
+  var scale = getElementById('scale').value;
+
+  canvas.style.width = canvas.width;
+  canvas.style.height = canvas.height;
+
+  var ctx = canvas.getContext('2d');
+
+  var image = ctx.createImageData(canvas.width, canvas.height);
+  var data = image.data;
+
+
+
+  var start = Date.now();
+
+  for (var x = 0; x < canvas.width; x++) {
+    for (var y = 0; y < canvas.height; y++) {
+      var cell = (x + y * canvas.width) * 4;
+      data[cell + 3] = 256; // alpha
+    }
+  }
+
+
+  function generateForChannel(channel) {
+    for (var x = 0; x < canvas.width; x++) {
+      for (var y = 0; y < canvas.height; y++) {
+        var value = noise.perlin2(x * scale, y * scale); // -1...1
+        value = (value + 1) / 2.0; // 0...1
+         value = value * 255;
+        var cell = (x + y * canvas.width) * 4;
+        data[cell + channel] = value;
+      }
+    }
+  }
+
+
+  var seed_r = getElementById('seed_r').value;
+  noise.seed(seed_r);
+  generateForChannel(0);
+
+  var seed_g = getElementById('seed_g').value;
+  noise.seed(seed_g);
+  generateForChannel(1);
+
+  var seed_b = getElementById('seed_b').value;
+  noise.seed(seed_b);
+  generateForChannel(2);
+
+
+  var end = Date.now();
+
+  ctx.fillColor = 'black';
+  ctx.fillRect(0, 0, 100, 100);
+  ctx.putImageData(image, 0, 0);
+
+  if(console) {
+    console.log('generated in ' + (end - start) + ' ms');
+  }
+}
+</script>
+
+</body>
+
+</html>

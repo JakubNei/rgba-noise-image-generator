@@ -3,14 +3,17 @@
 <head>
 <title>rgb noise image generator</title>
 <style>
-.centerbox {
-  width: 100%;
-  height: 100%;
-  margin: 0; padding: 0;
+body, html { 
+  width: 100%; 
+  height: 100%; 
+  padding: 0; 
+  margin: 0; 
 }
-body, html { width: 100%; height: 100%; padding: 0; margin: 0; }
-body {
-  background-color: #eee;
+body { 
+  background-color: #eee; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
 <script src='perlin.js'></script>
@@ -20,8 +23,7 @@ body {
 
 <body>  
 
-<div class='centerbox'>
-
+<div>
 <label>width: <input type="number" id="width" value="256" min="1"></label><br>
 <label>height: <input type="number" id="height" value="256" min="1"></label><br>
 <label>seed_r: <input type="range" id="seed_r" min="0" max="1" step="any"></label><br>
@@ -30,10 +32,11 @@ body {
 <label>scale: <input type="number" id="scale" value="0.7"></label><br>
 <button onclick="randomizeSeeds()">randomize seeds</button>
 <button onclick="generate()">regenerate</button><br>
+<div>
 <br>
+<div class='image'>
 <canvas id="canvas"></canvas>
-
-</div>
+<div class='image'>
 
 
 

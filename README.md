@@ -1,8 +1,8 @@
-# rgb-noise-image-generator
-RGB noise image generator
+# RGB noise image generator
+
+Visible on https://aeroson.github.io/rgb-noise-image-generator/
 
 Ever needed license free RGB noise image for use in shaders ? Use this !
-Visible on https://aeroson.github.io/rgb-noise-image-generator/
 
 Made from and uses:: https://github.com/josephg/noisejs
 

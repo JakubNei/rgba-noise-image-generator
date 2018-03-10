@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>rgb noise image generator</title>
+<title>rgba noise image generator</title>
 <style>
 body, html { 
   width: 100%; 
@@ -29,6 +29,8 @@ body {
 <label>seed_r: <input type="range" id="seed_r" min="0" max="1" step="any"></label><br>
 <label>seed_g: <input type="range" id="seed_g" min="0" max="1" step="any"></label><br>
 <label>seed_b: <input type="range" id="seed_b" min="0" max="1" step="any"></label><br>
+<label>seed_a: <input type="range" id="seed_a" min="0" max="1" step="any"></label><br>
+<label>use_alpha_channel: <input type="checkbox" id="use_alpha_channel" checked="checked"></label><br>
 <label>scale: <input type="number" id="scale" value="0.7"></label><br>
 <button onclick="randomizeSeeds()">randomize seeds</button>
 <button onclick="generate()">regenerate</button><br>
@@ -51,6 +53,7 @@ function randomizeSeeds() {
   getElementById('seed_r').value = Math.random();
   getElementById('seed_g').value = Math.random();
   getElementById('seed_b').value = Math.random();
+  getElementById('seed_a').value = Math.random();
 }
 
 function getElementById(id)
@@ -65,6 +68,7 @@ function generate() {
   canvas.width = getElementById('width').value;
   canvas.height = getElementById('height').value;
 
+  var use_alpha_channel = getElementById('use_alpha_channel').checked;
   var scale = getElementById('scale').value;
 
   canvas.style.width = canvas.width;
@@ -79,20 +83,21 @@ function generate() {
 
   var start = Date.now();
 
-  for (var x = 0; x < canvas.width; x++) {
-    for (var y = 0; y < canvas.height; y++) {
-      var cell = (x + y * canvas.width) * 4;
-      data[cell + 3] = 256; // alpha
-    }
-  }
-
-
   function generateForChannel(channel) {
     for (var x = 0; x < canvas.width; x++) {
       for (var y = 0; y < canvas.height; y++) {
         var value = noise.perlin2(x * scale, y * scale); // -1...1
         value = (value + 1) / 2.0; // 0...1
          value = value * 255;
+        var cell = (x + y * canvas.width) * 4;
+        data[cell + channel] = value;
+      }
+    }
+  }
+
+  function fillChannelWithValue(channel, value) {
+    for (var x = 0; x < canvas.width; x++) {
+      for (var y = 0; y < canvas.height; y++) {
         var cell = (x + y * canvas.width) * 4;
         data[cell + channel] = value;
       }
@@ -111,6 +116,16 @@ function generate() {
   var seed_b = getElementById('seed_b').value;
   noise.seed(seed_b);
   generateForChannel(2);
+
+
+  if(use_alpha_channel) {
+    var seed_a = getElementById('seed_a').value;
+    noise.seed(seed_a);
+    generateForChannel(3);
+  } else {
+    fillChannelWithValue(3, 255);
+  }
+
 
 
   var end = Date.now();

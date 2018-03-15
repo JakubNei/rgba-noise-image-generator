@@ -7,13 +7,20 @@ body, html {
   width: 100%; 
   height: 100%; 
   padding: 0; 
-  margin: 0; 
-}
-body { 
+  margin: 0;   
   background-color: #eee; 
+}
+body {
+  display: flex;
+  flex-direction: column;
+}
+.row { 
   display: flex;
   justify-content: center;
-  align-items: center;
+  flex-shrink: 0;
+}
+.normalize-min, .normalize-max {
+  width: 50px;
 }
 </style>
 <script src='perlin.js'></script>
@@ -23,39 +30,97 @@ body {
 
 <body>  
 
-<div>
-<label>width: <input type="number" id="width" value="256" min="1"></label><br>
-<label>height: <input type="number" id="height" value="256" min="1"></label><br>
-<label>seed_r: <input type="range" id="seed_r" min="0" max="1" step="any"></label><br>
-<label>seed_g: <input type="range" id="seed_g" min="0" max="1" step="any"></label><br>
-<label>seed_b: <input type="range" id="seed_b" min="0" max="1" step="any"></label><br>
-<label>seed_a: <input type="range" id="seed_a" min="0" max="1" step="any"></label><br>
-<label>use_alpha_channel: <input type="checkbox" id="use_alpha_channel" checked="checked"></label><br>
-<label>scale: <input type="number" id="scale" value="0.7"></label><br>
-<button onclick="randomizeSeeds()">randomize seeds</button>
-<button onclick="generate()">regenerate</button><br>
-<div>
-<br>
-<div class='image'>
+<div class="row">
+
+<fieldset>
+  <legend>All</legend>    
+  <label>width: <input type="number" id="width" value="256" min="1"></label><br>
+  <label>height: <input type="number" id="height" value="256" min="1"></label><br>
+  <button onclick="generate()">regenerate</button><br>
+  <button onclick="randomizeAllSeeds()">randomize all seeds</button>
+</fieldset>
+
+</div><br>
+
+<div class="row">
+
+
+<fieldset id="red">
+  <legend>red</legend> 
+  <label>enable: <input type="checkbox" class="enable" checked="chec"></label><br>
+  <label>scale: <input type="number" class="scale" value="0.7"></label><br>
+  <label>seed: <input type="range" class="seed" min="0" max="1" step="any"></label><button onclick="randomizeSeed('red')">randomize</button><br>  
+  <label>transform [-1, 1] range to: [<input type="number" class="normalize-min" value="0" step="any">, <input type="number" class="normalize-max" value="1" step="any" size="2">]</label><br>
+  generated min: <span class="generated-min">-</span><br>
+  generated max: <span class="generated-max">-</span><br>
+  generated average: <span class="generated-avg">-</span><br>
+</fieldset>
+
+<fieldset id="green">
+<legend>green</legend> 
+  <label>enable: <input type="checkbox" class="enable" checked="chec"></label><br>
+  <label>scale: <input type="number" class="scale" value="0.7"></label><br>
+  <label>seed: <input type="range" class="seed" min="0" max="1" step="any"></label><button onclick="randomizeSeed('green')">randomize</button><br>  
+  <label>transform [-1, 1] range to: [<input type="number" class="normalize-min" value="0" step="any">, <input type="number" class="normalize-max" value="1" step="any" size="2">]</label><br>
+  generated min: <span class="generated-min">-</span><br>
+  generated max: <span class="generated-max">-</span><br>
+  generated average: <span class="generated-avg">-</span><br>
+</fieldset>
+
+<fieldset id="blue">
+  <legend>blue</legend> 
+  <label>enable: <input type="checkbox" class="enable" checked="chec"></label><br>
+  <label>scale: <input type="number" class="scale" value="0.7"></label><br>
+  <label>seed: <input type="range" class="seed" min="0" max="1" step="any"></label><button onclick="randomizeSeed('blue')">randomize</button><br>  
+  <label>transform [-1, 1] range to: [<input type="number" class="normalize-min" value="0" step="any">, <input type="number" class="normalize-max" value="1" step="any" size="2">]</label><br>
+  generated min: <span class="generated-min">-</span><br>
+  generated max: <span class="generated-max">-</span><br>
+  generated average: <span class="generated-avg">-</span><br>
+</fieldset>
+
+<fieldset id="alpha">
+  <legend>alpha</legend> 
+  <label>enable: <input type="checkbox" class="enable" checked="chec"></label><br>
+  <label>scale: <input type="number" class="scale" value="0.7"></label><br>
+  <label>seed: <input type="range" class="seed" min="0" max="1" step="any"></label><button onclick="randomizeSeed('alpha')">randomize</button><br>  
+  <label>transform [-1, 1] range to: [<input type="number" class="normalize-min" value="0" step="any">, <input type="number" class="normalize-max" value="1" step="any" size="2">]</label><br>
+  generated min: <span class="generated-min">-</span><br>
+  generated max: <span class="generated-max">-</span><br>
+  generated average: <span class="generated-avg">-</span><br>
+</fieldset>
+
+</div><br>
+
+<div class="row">
 <canvas id="canvas"></canvas>
-<div class='image'>
+</div>
 
 
 
 <script>
 
 window.onload = function() {
-  randomizeSeeds();
+  randomizeAllSeeds();
   generate();
 };
 
-function randomizeSeeds() {
-  getElementById('seed_r').value = Math.random();
-  getElementById('seed_g').value = Math.random();
-  getElementById('seed_b').value = Math.random();
-  getElementById('seed_a').value = Math.random();
+function randomizeAllSeeds() {
+  randomizeSeed('red');
+  randomizeSeed('green');
+  randomizeSeed('blue');
+  randomizeSeed('alpha');
 }
 
+function randomizeSeed(color)
+{
+  element(color, 'seed').value = Math.random();
+}
+
+
+function element(channel, className)
+{
+  return getElementById(channel).getElementsByClassName(className)[0];
+}
 function getElementById(id)
 {
   return document.getElementById(id);
@@ -67,9 +132,6 @@ function generate() {
   var canvas = getElementById('canvas');
   canvas.width = getElementById('width').value;
   canvas.height = getElementById('height').value;
-
-  var use_alpha_channel = getElementById('use_alpha_channel').checked;
-  var scale = getElementById('scale').value;
 
   canvas.style.width = canvas.width;
   canvas.style.height = canvas.height;
@@ -83,17 +145,59 @@ function generate() {
 
   var start = Date.now();
 
-  function generateForChannel(channel) {
+
+
+
+  function generateForChannel(channelName, channelIndex) {
+
+    var enable = element(channelName, 'enable').checked;
+
+    if(!enable)  {
+      if(channelName == 'alpha')
+        fillChannelWithValue(channelIndex, 255);
+      else
+        fillChannelWithValue(channelIndex, 0);
+      return;
+    }
+
+    var scale = element(channelName, 'scale').value * 1;    
+    var seed = element(channelName, 'seed').value * 1;
+
+    var normalize_min = element(channelName, 'normalize-min').value * 1;
+    var normalize_max = element(channelName, 'normalize-max').value * 1;
+
+    var min = 10;
+    var max = -10;
+
+    var sum = 0;
+
+    noise.seed(seed);
+
     for (var x = 0; x < canvas.width; x++) {
       for (var y = 0; y < canvas.height; y++) {
-        var value = noise.perlin2(x * scale, y * scale); // -1...1
+        var value = noise.perlin2(x * scale, y * scale); // -1...1     
+
+
         value = (value + 1) / 2.0; // 0...1
-         value = value * 255;
+        value = normalize_min + value * (normalize_max - normalize_min);
+
+        if(value > max) max = value;
+        if(value < min) min = value;
+        sum += value;
+
+        value = value * 255;
         var cell = (x + y * canvas.width) * 4;
-        data[cell + channel] = value;
+        data[cell + channelIndex] = value;
       }
     }
+
+    var avg = sum / ((canvas.width - 1) * (canvas.height - 1));
+
+    element(channelName, 'generated-min').textContent  = min;
+    element(channelName, 'generated-max').textContent  = max;
+    element(channelName, 'generated-avg').textContent  = avg;
   }
+
 
   function fillChannelWithValue(channel, value) {
     for (var x = 0; x < canvas.width; x++) {
@@ -105,27 +209,11 @@ function generate() {
   }
 
 
-  var seed_r = getElementById('seed_r').value;
-  noise.seed(seed_r);
-  generateForChannel(0);
 
-  var seed_g = getElementById('seed_g').value;
-  noise.seed(seed_g);
-  generateForChannel(1);
-
-  var seed_b = getElementById('seed_b').value;
-  noise.seed(seed_b);
-  generateForChannel(2);
-
-
-  if(use_alpha_channel) {
-    var seed_a = getElementById('seed_a').value;
-    noise.seed(seed_a);
-    generateForChannel(3);
-  } else {
-    fillChannelWithValue(3, 255);
-  }
-
+  generateForChannel('red', 0);
+  generateForChannel('green', 1);
+  generateForChannel('blue', 2);
+  generateForChannel('alpha', 3);
 
 
   var end = Date.now();
